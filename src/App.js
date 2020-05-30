@@ -42,6 +42,7 @@ const particleOptions = {
   }
 }
 
+
 class App extends Component {
   constructor(){
     super();
@@ -53,6 +54,14 @@ class App extends Component {
       isSignedIn: false
     }
   }
+
+  componentDidMount() {
+    fetch('http://localhost:3000/')
+      .then(response => response.json())
+      .then(console.log)
+  }
+  //I can use then(console.log) instead of then(data => console.log(data))
+  
 
   calculateFaceLocation = (data) => {
     const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
@@ -104,7 +113,7 @@ class App extends Component {
   }
 
   render() {
-     const {isSignedIn, imageUrl, route, box} = this.state;
+    const {isSignedIn, imageUrl, route, box} = this.state;
     return (
       <div className="App">
         <Particles className="particles"
