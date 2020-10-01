@@ -51,16 +51,37 @@ class App extends Component {
       imageUrl: '',
       box: {},
       route: 'signin',
-      isSignedIn: false
+      isSignedIn: false,
+      user: {
+        id: '',
+        name: '',
+        email: '',
+        entries: 0,
+        joined: ''
+      }
     }
   }
 
-  componentDidMount() {
-    fetch('http://localhost:3000/')
-      .then(response => response.json())
-      .then(console.log)
-  }
+  //Update the information of the new user received.
+  loadUser = (data) => {
+    this.setState({
+      user: {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        entries: data.entries,
+        joined: data.joined
+      }
+    })
+  } 
+  //We use componentDidMount to check the connection
+  // componentDidMount() {
+  //   fetch('http://localhost:3000/')
+  //     .then(response => response.json())
+  //     .then(console.log)
+  // }
   //I can use then(console.log) instead of then(data => console.log(data))
+  
   
 
   calculateFaceLocation = (data) => {
@@ -134,7 +155,8 @@ class App extends Component {
             route === 'signin' ?
               <Signin onRouteChange={this.onRouteChange}/> 
             :
-              <Register onRouteChange={this.onRouteChange}/> 
+              <Register onRouteChange={this.onRouteChange}
+                        loadUser = {this.loadUser}/> 
           )
           
           }
