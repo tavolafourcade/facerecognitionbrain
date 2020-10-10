@@ -11,13 +11,10 @@ import './App.css';
 import 'tachyons';
 import Particles from 'react-particles-js';
 
-// Require the client
-import Clarifai from 'clarifai';
+// Require the client <- moved to the backend 
+//import Clarifai from 'clarifai';
 
-// initialize with your api key.
-const app = new Clarifai.App({
-  apiKey: 'fa3e1f141f1f49649af4210db5d3d3dd'
- });
+
 
  //Working with the background
 const particleOptions = {
@@ -112,36 +109,41 @@ class App extends Component {
   }
 
   onButtonSubmit = () => {
-    this.setState({imageUrl: this.state.input})
-    app.models
-      .predict(
-        Clarifai.FACE_DETECT_MODEL, 
-          this.state.input)
-          .then(response => {
-            if (response){
-              fetch('http://localhost:3000/image',{
-                method: 'put',
-                headers: {'Content-Type': 'application/json'},
-                //sending id
-                body: JSON.stringify({
-                    id: this.state.user.id
-                })
-              })
-              .then(response => response.json())
-              .then(count => {
-                this.setState({user:{
-                  entries: count
-                }})
-                
-              })
-            }
-
-            this.displayFaceBox(this.calculateFaceLocation(response))
+    this.setState({imageUrl: this.state.input});
+      fetch('http://localhost:3000/imageurl',{
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        //sending id
+        body: JSON.stringify({
+            input: this.state.input
+        })
+      })
+      .then(response => response.json())
+      .then(response => {
+        if (response){
+          fetch('http://localhost:3000/image',{
+            method: 'put',
+            headers: {'Content-Type': 'application/json'},
+            //sending id
+            body: JSON.stringify({
+                id: this.state.user.id
+            })
           })
-          .catch(err => console.log(err));
-              //console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
-              
+          .then(response => response.json())
+          .then(count => {
+            this.setState(Object.assign(this.state.user, {
+              entries: count
+            }))
+            
+          })
         }
+
+        this.displayFaceBox(this.calculateFaceLocation(response))
+        })
+        .catch(err => console.log(err));
+            //console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
+            
+    }
 
   onRouteChange = (route) => {
     //Making some adjustment for the Navigation bar
